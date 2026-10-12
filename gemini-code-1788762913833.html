@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>🎮 Game Robot Kode & Kuis Harta Karun</title>
+  <style>
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      text-align: center; 
+      background: linear-gradient(135deg, #74b9ff, #a29bfe);
+      color: #2d3436;
+      padding: 20px; 
+      margin: 0;
+    }
+    
+    .game-card {
+      background: #ffffff;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    h1 { color: #0984e3; margin-top: 0; margin-bottom: 5px; }
+    p { margin-bottom: 15px; font-size: 14px; color: #636e72; }
+    
+    /* 🧱 Arena Game 6x6 */
+    #arena { 
+      display: grid; 
+      grid-template-columns: repeat(6, 50px); 
+      gap: 6px; 
+      justify-content: center; 
+      margin: 15px auto; 
+    }
+    .cell { 
+      width: 50px; 
+      height: 50px; 
+      background-color: #f1f2f6; 
+      border-radius: 8px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-size: 24px; 
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+      transition: background-color 0.3s;
+    }
+    .wall { background-color: #2d3436; }
+    .target { background-color: #55efc4; }
+    .treasure { background-color: #ffeaa7; }
+
+    /* 📜 Display Perintah */
+    #command-box { 
+      background: #f8f9fa; 
+      border: 2px dashed #b2bec3; 
+      padding: 10px; 
+      min-height: 35px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 10px;
+      word-wrap: break-word;
+    }
+
+    /* 🎛️ Tombol Kontrol */
+    .controls { margin-top: 8px; }
+    button { 
+      padding: 10px 14px; 
+      font-size: 13px; 
+      margin: 2px; 
+      cursor: pointer; 
+      border: none; 
+      border-radius: 8px; 
+      background-color: #0984e3; 
+      color: white; 
+      font-weight: bold;
+      transition: transform 0.1s, background-color 0.2s;
+    }
+    button:active { transform: scale(0.95); }
+    button:hover { background-color: #74b9ff; }
+    
+    .btn-undo { background-color: #fdcb6e; color: #2d3436; }
+    .btn-undo:hover { background-color: #ffeaa7; }
+    .btn-run { background-color: #00b894; }
+    .btn-run:hover { background-color: #55efc4; }
+    .btn-reset { background-color: #d63031; }
+    .btn-reset:hover { background-color: #ff7675; }
+
+    /* ❓ Modal Kuis */
+    #quiz-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+    .quiz-content {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 350px;
+      width: 90%;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .quiz-option {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      background-color: #dfe6e9;
+      color: #2d3436;
+      text-align: left;
+    }
+    .quiz-option:hover { background-color: #b2bec3; }
+  </style>
+</head>
+<body>
+
+  <div class="game-card">
+    <h1>🤖 Robot Kode & Harta Karun 💎</h1>
+    <p>Bantu 🤖 buka 💎 dengan kuis, lalu menuju 🏆!</p>
+
+    <div id="arena"></div>
+
+    <div><strong>Algoritma Perintah:</strong></div>
+    <div id="command-box"></div>
+
+    <!-- Tombol Arah & Hapus -->
+    <div class="controls">
+      <button onclick="tambahPerintah('⬆️ ATAS')">⬆️ Atas</button>
+      <button onclick="tambahPerintah('⬇️ BAWAH')">⬇️ Bawah</button>
+      <button onclick="tambahPerintah('⬅️ KIRI')">⬅️ Kiri</button>
+      <button onclick="tambahPerintah('➡️ KANAN')">➡️ Kanan</button>
+      <button class="btn-undo" onclick="hapusPerintah()">⌫ Hapus</button>
+    </div>
+
+    <!-- Tombol Eksekusi & Reset -->
+    <div class="controls">
+      <button class="btn-run" onclick="jalankanKode()">▶️ Jalankan Kode</button>
+      <button class="btn-reset" onclick="resetGame()">🔄 Reset Total</button>
+    </div>
+  </div>
+
+  <!-- Pop-Up Kuis -->
+  <div id="quiz-modal">
+    <div class="quiz-content">
+      <h3>💎 Kuis Harta Karun!</h3>
+      <p id="quiz-question">Pertanyaan kuis...</p>
+      <div id="quiz-options"></div>
+    </div>
+  </div>
+
+  <script>
+    // 🗺️ Papan 6x6 (0: Kosong, 1: Tembok, 2: Target, 3: Harta Karun A, 4: Harta Karun B)
+    const mapAwal = [
+      [0, 0, 1, 0, 0, 0],
+      [1, 0, 3, 0, 1, 0], // 3 = Harta Karun Atas
+      [0, 0, 1, 0, 0, 0],
+      [0, 1, 1, 1, 1, 0],
+      [0, 4, 0, 0, 1, 0], // 4 = Harta Karun Bawah
+      [1, 1, 0, 0, 0, 2]
+    ];
+
+    let map = JSON.parse(JSON.stringify(mapAwal));
+
+    // Kuis Berbeda Berdasarkan ID Harta Karun
+    const kuisData = {
+      3: {
+        soal: "Perangkat keras yang digunakan untuk memasukkan teks ke komputer adalah... ⌨️",
+        pilihan: ["A. Monitor", "B. Keyboard", "C. Speaker", "D. Mouse"],
+        jawaban: 1
+      },
+      4: {
+        soal: "Urutan langkah-langkah logis untuk menyelesaikan masalah dalam coding disebut... 📜",
+        pilihan: ["A. Algoritma", "B. Hardware", "C. Internet", "D. Memori"],
+        jawaban: 0
+      }
+    };
+
+    let robotPos = { x: 0, y: 0 };
+    let perintahList = [];
+    let sedangKuis = false;
+
+    function renderBoard() {
+      const arena = document.getElementById("arena");
+      arena.innerHTML = "";
+
+      for (let r = 0; r < 6; r++) {
+        for (let c = 0; c < 6; c++) {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+
+          if (r === robotPos.y && c === robotPos.x) {
+            cell.innerText = "🤖";
+          } else if (map[r][c] === 1) {
+            cell.classList.add("wall");
+            cell.innerText = "🧱";
+          } else if (map[r][c] === 2) {
+            cell.classList.add("target");
+            cell.innerText = "🏆";
+          } else if (map[r][c] === 3 || map[r][c] === 4) {
+            cell.classList.add("treasure");
+            cell.innerText = "💎";
+          }
+
+          arena.appendChild(cell);
+        }
+      }
+    }
+
+    function tambahPerintah(aksi) {
+      if (sedangKuis) return;
+      perintahList.push(aksi);
+      updateDisplayPerintah();
+    }
+
+    // ⌫ Fungsi Hapus Perintah Terakhir (Undo)
+    function hapusPerintah() {
+      if (sedangKuis || perintahList.length === 0) return;
+      perintahList.pop(); // Menghapus elemen terakhir
+      updateDisplayPerintah();
+    }
+
+    function updateDisplayPerintah() {
+      document.getElementById("command-box").innerText = perintahList.join(" ➔ ");
+    }
+
+    async function jalankanKode() {
+      if (perintahList.length === 0) {
+        alert("Pilih instruksi terlebih dahulu!");
+        return;
+      }
+
+      for (let i = 0; i < perintahList.length; i++) {
+        let perintah = perintahList[i];
+
+        if (perintah.includes("ATAS")) robotPos.y -= 1;
+        if (perintah.includes("BAWAH")) robotPos.y += 1;
+        if (perintah.includes("KANAN")) robotPos.x += 1;
+        if (perintah.includes("KIRI")) robotPos.x -= 1;
+
+        // Cek Batas Arena
+        if (robotPos.x < 0 || robotPos.x > 5 || robotPos.y < 0 || robotPos.y > 5) {
+          alert("💥 Robot keluar dari arena! Coba lagi.");
+          resetGame();
+          return;
+        }
+
+        // Cek Tembok
+        if (map[robotPos.y][robotPos.x] === 1) {
+          renderBoard();
+          alert("💥 Robot menabrak tembok! Coba lagi.");
+          resetGame();
+          return;
+        }
+
+        renderBoard();
+
+        // Cek Harta Karun 💎 (ID 3 atau 4)
+        let idHarta = map[robotPos.y][robotPos.x];
+        if (idHarta === 3 || idHarta === 4) {
+          map[robotPos.y][robotPos.x] = 0; // Hilangkan harta karun dari arena
+          await tampilkanKuis(idHarta);
+          
+          // Reset perintah setelah menemukan harta karun
+          perintahList = [];
+          updateDisplayPerintah();
+          alert("📍 Perintah direset! Buat algoritma baru dari titik ini menuju sasaran berikutnya.");
+          return; 
+        }
+
+        await new Promise(r => setTimeout(r, 500));
+      }
+
+      // Cek Kemenangan 🏆
+      if (map[robotPos.y][robotPos.x] === 2) {
+        alert("🎉 Hore! Robot berhasil menyelesaikan petualangan dan mencapai piala!");
+      } else if (perintahList.length > 0) {
+        alert("😅 Perintah selesai, tetapi robot belum mencapai piala. Tambahkan instruksi lagi!");
+      }
+    }
+
+    function tampilkanKuis(idHarta) {
+      return new Promise((resolve) => {
+        sedangKuis = true;
+        const modal = document.getElementById("quiz-modal");
+        const currentQuiz = kuisData[idHarta];
+
+        document.getElementById("quiz-question").innerText = currentQuiz.soal;
+        const optionsContainer = document.getElementById("quiz-options");
+        optionsContainer.innerHTML = "";
+
+        currentQuiz.pilihan.forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "quiz-option";
+          btn.innerText = opt;
+          btn.onclick = () => {
+            if (idx === currentQuiz.jawaban) {
+              alert("✅ JAWABAN BENAR! Harta karun berhasil dibuka! 🎉");
+            } else {
+              alert("❌ JAWABAN SALAH! Tetap semangat dan pelajari lagi ya!");
+            }
+            modal.style.display = "none";
+            sedangKuis = false;
+            resolve();
+          };
+          optionsContainer.appendChild(btn);
+        });
+
+        modal.style.display = "flex";
+      });
+    }
+
+    function resetGame() {
+      map = JSON.parse(JSON.stringify(mapAwal));
+      robotPos = { x: 0, y: 0 };
+      perintahList = [];
+      updateDisplayPerintah();
+      renderBoard();
+    }
+
+    renderBoard();
+  </script>
+</body>
+</html>
