@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Misi Scratch Level Up: Proyek Bawah Laut - Koding Kelas 6 MI</title>
+  
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- CSS Murni Tertanam Lengkap (Tanpa Ketergantungan Internet) -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Fredoka', cursive, sans-serif;
+      background-color: #f0f9ff;
+      color: #1e293b;
+      min-height: 100vh;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .body-font {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 850px;
+      margin: 0 auto;
+    }
+
+    /* Header Styling */
+    header {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+      border: 4px solid #c7d2fe;
+      margin-bottom: 24px;
+    }
+
+    .header-top {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media (min-width: 640px) {
+      .header-top {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .header-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .icon-badge {
+      width: 56px;
+      height: 56px;
+      background-color: #fbbf24;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      border: 2px solid #fcd34d;
+      flex-shrink: 0;
+    }
+
+    .badge-tag {
+      background-color: #e0e7ff;
+      color: #4338ca;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: inline-block;
+    }
+
+    h1 {
+      font-size: 22px;
+      color: #1e1b4b;
+      margin-top: 4px;
+      font-weight: 800;
+    }
+
+    .header-scores {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      background-color: #eef2ff;
+      border: 2px solid #c7d2fe;
+      border-radius: 16px;
+      padding: 10px 16px;
+      gap: 16px;
+    }
+
+    .score-box {
+      text-align: center;
+    }
+
+    .score-box p.label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+    }
+
+    .score-box p.val-score {
+      font-size: 28px;
+      font-weight: 900;
+      color: #4f46e5;
+    }
+
+    .score-box p.val-level {
+      font-size: 20px;
+      font-weight: 800;
+      color: #f59e0b;
+    }
+
+    .divider {
+      width: 2px;
+      height: 32px;
+      background-color: #c7d2fe;
+    }
+
+    .progress-outer {
+      margin-top: 16px;
+      width: 100%;
+      background-color: #f1f5f9;
+      height: 16px;
+      border-radius: 999px;
+      overflow: hidden;
+      padding: 2px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .progress-inner {
+      background: linear-gradient(90deg, #fbbf24, #4f46e5);
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.5s ease;
+      width: 20%;
+    }
+
+    /* Cards & Sections */
+    .card-panel {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+      border: 4px solid #e0e7ff;
+      margin-bottom: 24px;
+    }
+
+    .text-center { text-align: center; }
+
+    .start-icon {
+      width: 80px;
+      height: 80px;
+      background-color: #e0e7ff;
+      color: #4f46e5;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      margin: 0 auto 16px auto;
+      border: 4px solid #c7d2fe;
+    }
+
+    .form-group {
+      max-width: 420px;
+      margin: 20px auto;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 4px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      background-color: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      font-weight: 700;
+      color: #334155;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: #6366f1;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 14px 20px;
+      font-weight: 800;
+      font-size: 16px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .btn-emerald {
+      background-color: #10b981;
+      color: #ffffff;
+      border-bottom: 4px solid #047857;
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-emerald:hover { background-color: #059669; }
+    .btn-emerald:active { transform: scale(0.98); }
+
+    .btn-indigo {
+      background-color: #4f46e5;
+      color: #ffffff;
+      border-bottom: 4px solid #3730a3;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-indigo:hover { background-color: #4338ca; }
+
+    .btn-amber {
+      background-color: #f59e0b;
+      color: #ffffff;
+      border-bottom: 4px solid #b45309;
+      box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-amber:hover { background-color: #d97706; }
+
+    /* Mission Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    @media (min-width: 640px) {
+      .cards-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .item-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      padding: 16px;
+      border: 3px solid #e0e7ff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .item-num {
+      font-size: 11px;
+      font-weight: 700;
+      background-color: #e0e7ff;
+      color: #4338ca;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .item-status {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+
+    .item-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .opt-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .btn-opt {
+      padding: 10px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 12px;
+      border: 1px solid #cbd5e1;
+      background-color: #f8fafc;
+      color: #475569;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-opt-true-active {
+      background-color: #10b981 !important;
+      color: #ffffff !important;
+      border-color: #059669 !important;
+    }
+
+    .btn-opt-false-active {
+      background-color: #f43f5e !important;
+      color: #ffffff !important;
+      border-color: #e11d48 !important;
+    }
+
+    /* Feedback Box */
+    .fb-box {
+      font-size: 12px;
+      padding: 10px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .fb-correct {
+      background-color: #d1fae5;
+      color: #065f46;
+      border: 1px solid #6ee7b7;
+    }
+
+    .fb-wrong {
+      background-color: #ffe4e6;
+      color: #9f1239;
+      border: 1px solid #fca5a5;
+    }
+
+    /* Footer Action Bar */
+    .action-bar {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 16px;
+      border: 2px solid #e0e7ff;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    @media (min-width: 640px) {
+      .action-bar {
+        flex-direction: row;
+      }
+    }
+
+    .hidden { display: none !important; }
+
+    /* Modal Sertifikat */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 999;
+    }
+
+    .cert-card {
+      background-color: #ffffff;
+      border-radius: 24px;
+      padding: 24px;
+      max-width: 550px;
+      width: 100%;
+      border: 8px solid #fbbf24;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      text-align: center;
+    }
+
+    .cert-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: #1e1b4b;
+      margin: 8px 0;
+    }
+
+    .cert-box {
+      background-color: #eef2ff;
+      border: 2px solid #c7d2fe;
+      border-radius: 16px;
+      padding: 12px;
+      margin: 16px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header Section -->
+    <header>
+      <div class="header-top">
+        <div class="header-info">
+          <div class="icon-badge">🐱</div>
+          <div>
+            <span class="badge-tag">Koding & AI • Kelas 6 SD/MI</span>
+            <h1>Scratch Level Up: Proyek Bawah Laut</h1>
+            <p class="body-font" style="font-size: 13px; color: #64748b;">Membuka Proyek, Sprite, & Backdrop Bawah Laut</p>
+          </div>
+        </div>
+        
+        <div class="header-scores">
+          <div class="score-box">
+            <p class="label body-font">Total Skor</p>
+            <p id="total-score-display" class="val-score">0</p>
+          </div>
+          <div class="divider"></div>
+          <div class="score-box">
+            <p class="label body-font">Misi</p>
+            <p id="level-indicator" class="val-level">1 / 5</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="progress-outer">
+        <div id="progress-bar" class="progress-inner"></div>
+      </div>
+    </header>
+
+    <!-- Start Screen -->
+    <section id="start-screen" class="card-panel text-center">
+      <div class="start-icon">🎮</div>
+      <h2 style="font-size: 24px; color: #1e1b4b; margin-bottom: 8px;">Selamat Datang di Misi Scratch Level Up!</h2>
+      <p class="body-font" style="font-size: 14px; color: #475569; max-width: 500px; margin: 0 auto;">
+        Di Pelajaran 2 ini, kita akan belajar langkah membuat proyek baru di <strong>scratch.mit.edu</strong>, menghapus <i>sprite</i> bawaan, menambahkan <strong>Pufferfish & Jellyfish</strong>, serta memilih latar <strong>Underwater</strong>!
+      </p>
+
+      <div class="form-group body-font">
+        <div style="margin-bottom: 12px;">
+          <label>Nama Lengkap Siswa:</label>
+          <input type="text" id="student-name-input" placeholder="Masukkan namamu..." class="form-control">
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>Kelas:</label>
+            <input type="text" id="student-class-input" value="6 SD" class="form-control">
+          </div>
+          <div>
+            <label>No. Absen:</label>
+            <input type="text" id="student-id-input" placeholder="Contoh: 15" class="form-control">
+          </div>
+        </div>
+      </div>
+
+      <button onclick="startGame()" class="btn btn-emerald" style="max-width: 420px;">
+        🚀 Mulai Misi Scratch
+      </button>
+    </section>
+
+    <!-- Main Game Screen -->
+    <main id="game-screen" class="hidden">
+      <!-- Mission Story Card -->
+      <div class="card-panel" style="padding: 20px;">
+        <div style="display: flex; gap: 14px; align-items: flex-start;">
+          <span id="mission-icon" style="font-size: 32px; background: #fef3c7; padding: 10px; border-radius: 12px; border: 2px solid #fde68a;">🌐</span>
+          <div>
+            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
+              <span id="mission-badge" class="badge-tag" style="background: #4f46e5; color: #fff;">MISI 1 OF 5</span>
+              <span id="mission-topic" class="body-font" style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Topik: Proyek Baru</span>
+            </div>
+            <h2 id="mission-title" style="font-size: 20px; color: #1e1b4b;">Membuka Proyek Baru di Scratch</h2>
+            <p id="mission-story" class="body-font" style="font-size: 13px; color: #475569; margin-top: 4px;">Analisislah pertanyaan di bawah ini untuk menguji pemahamanmu!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Cards Container -->
+      <div id="cards-container" class="cards-grid">
+        <!-- Dynamic Cards -->
+      </div>
+
+      <!-- Action Buttons Bar -->
+      <div class="action-bar">
+        <p class="body-font" style="font-size: 12px; color: #64748b;">
+          *Pilihlah tombol <strong style="color: #10b981;">⭐ BENAR</strong> atau <strong style="color: #f43f5e;">❌ SALAH</strong> pada setiap kartu.
+        </p>
+        <div style="display: flex; gap: 8px; width: 100%; max-width: 320px;">
+          <button id="check-btn" onclick="checkCurrentMission()" class="btn btn-indigo">
+            🔎 Cek Jawaban Misi
+          </button>
+          <button id="next-btn" onclick="nextMission()" class="btn btn-amber hidden">
+            Misi Berikutnya ➡️
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Certificate Modal -->
+    <div id="certificate-modal" class="modal-overlay hidden">
+      <div class="cert-card">
+        <span class="badge-tag" style="background: #fef3c7; color: #92400e; border: 1px solid #fde68a;">SERTIFIKAT KELULUSAN LKPD</span>
+        <h2 class="cert-title">SCRATCH MASTER PROYEK BARU</h2>
+        <p class="body-font" style="font-size: 13px; color: #64748b;">Diberikan atas keberhasilan menguasai langkah dasar pembuatan proyek Scratch Bawah Laut</p>
+
+        <div class="cert-box body-font">
+          <p style="font-size: 11px; color: #6366f1; font-weight: 700; text-transform: uppercase;">Nama Programer Muda:</p>
+          <p id="cert-student-name" style="font-size: 20px; font-weight: 900; color: #1e1b4b; margin: 2px 0;">NAMA SISWA</p>
+          <p style="font-size: 12px; color: #64748b;">Kelas: <strong id="cert-student-class">6 SD</strong> | Absen: <strong id="cert-student-id">--</strong></p>
+        </div>
+
+        <div class="grid-2" style="max-width: 360px; margin: 0 auto 16px auto;">
+          <div style="background: #fef3c7; border: 2px solid #fde68a; border-radius: 12px; padding: 10px;">
+            <p class="body-font" style="font-size: 11px; font-weight: 700; color: #b45309;">NILAI AKHIR</p>
+            <p id="cert-score" style="font-size: 32px; font-weight: 900; color: #d97706;">100</p>
+          </div>
+          <div style="background: #d1fae5; border: 2px solid #6ee7b7; border-radius: 12px; padding: 10px;">
+            <p class="body-font" style="font-size: 11px; font-weight: 700; color: #047857;">PREDIKAT</p>
+            <p id="cert-grade" style="font-size: 14px; font-weight: 900; color: #059669; margin-top: 6px;">Sangat Memuaskan 🎉</p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 8px; justify-content: center;">
+          <button onclick="window.print()" class="btn btn-indigo" style="width: auto; padding: 10px 20px;">🖨️ Cetak Sertifikat</button>
+          <button onclick="location.reload()" class="btn" style="width: auto; padding: 10px 20px; background: #e2e8f0; color: #334155;">🔄 Main Lagi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const rawMissions = [
+      {
+        id: 1,
+        topic: "Membuka Proyek Baru",
+        title: "Misi 1: Langkah Awal di Situs Scratch 🌐",
+        icon: "🌐",
+        story: "Kamu hendak memulai pembuatan proyek Scratch dari nol di laboratorium komputer. Analisislah pernyataan di bawah ini!",
+        cards: [
+          { id: 1, title: "Situs resmi untuk mengakses Scratch adalah scratch.mit.edu", isCorrect: true, explanation: "Benar! scratch.mit.edu adalah alamat web resmi platform Scratch dari MIT." },
+          { id: 2, title: "Untuk membuat proyek baru, kita mengeklik tombol 'Create' atau 'Buat'", isCorrect: true, explanation: "Benar! Tombol 'Create' atau 'Buat' di bagian atas situs digunakan untuk membuka proyek baru." },
+          { id: 3, title: "Proyek baru Scratch hanya bisa dibuka jika kita membayar biaya langganan", isCorrect: false, explanation: "Salah! Scratch adalah platform gratis yang dapat digunakan tanpa biaya." },
+          { id: 4, title: "Saat proyek baru dibuka, layar editor coding langsung muncul", isCorrect: true, explanation: "Benar! Setelah mengeklik 'Create', kita langsung dibawa ke halaman editor panggung." },
+          { id: 5, title: "Tombol 'Ide' dan 'Tentang' digunakan untuk menutup proyek baru", isCorrect: false, explanation: "Salah! Tombol 'Ide' untuk tutorial dan 'Tentang' untuk informasi platform." }
+        ]
+      },
+      {
+        id: 2,
+        topic: "Menghapus Sprite",
+        title: "Misi 2: Pengaturan Tokoh Bawaan (Sprite Cat) 🐱",
+        icon: "🐱",
+        story: "Saat proyek dibuka, muncul tokoh kucing (Sprite 1) secara otomatis di panggung. Pelajari cara mengelolanya!",
+        cards: [
+          { id: 1, title: "Tokoh atau karakter dalam Scratch disebut dengan istilah 'Sprite'", isCorrect: true, explanation: "Benar! Semua objek atau karakter di Scratch disebut 'Sprite'." },
+          { id: 2, title: "Sprite kucing bawaan tidak dapat dihapus sama sekali dari proyek", isCorrect: false, explanation: "Salah! Sprite kucing bisa dihapus dengan mengeklik ikon tong sampah." },
+          { id: 3, title: "Menghapus sprite dilakukan jika kita ingin menggunakan tokoh cerita yang berbeda", isCorrect: true, explanation: "Benar! Jika cerita kita bertema laut, sprite kucing bisa dihapus agar diganti." },
+          { id: 4, title: "Saat menghapus sprite, muncul dialog konfirmasi 'Are you sure you want to delete this sprite?'", isCorrect: true, explanation: "Benar! Scratch memberikan pesan konfirmasi 'yes' atau 'no'." },
+          { id: 5, title: "Mengeklik tombol 'no' pada dialog hapus akan menghapus sprite selamanya", isCorrect: false, explanation: "Salah! Mengeklik 'no' membatalkan penghapusan." }
+        ]
+      },
+      {
+        id: 3,
+        topic: "Memilih Sprite Baru",
+        title: "Misi 3: Menambahkan Tokoh Cerita (Choose a Sprite) 🐡",
+        icon: "🐡",
+        story: "Sekarang kita akan memilih tokoh cerita baru untuk proyek bawah laut kita. Periksa aturan memilih sprite!",
+        cards: [
+          { id: 1, title: "Ikon 'Choose a Sprite' (Pilih Sprite) berbentuk wajah kucing dengan tanda plus (+)", isCorrect: true, explanation: "Benar! Ikon di sudut kanan bawah area sprite digunakan untuk memilih sprite." },
+          { id: 2, title: "Kita hanya diperbolehkan memilih 1 (satu) sprite saja dalam satu proyek Scratch", isCorrect: false, explanation: "Salah! Kita bisa menambahkan banyak sprite sesuai kebutuhan." },
+          { id: 3, title: "'Jellyfish' (Ubur-ubur) dan 'Pufferfish' (Ikan Buntal) terdapat di perpustakaan Sprite", isCorrect: true, explanation: "Benar! Kedua tokoh hewan laut ini tersedia di perpustakaan Sprite." },
+          { id: 4, title: "Kategori 'Hewan' (Animals) memudahkan kita mencari Pufferfish dan Jellyfish", isCorrect: true, explanation: "Benar! Kategori membantu menyaring sprite berdasarkan jenisnya." },
+          { id: 5, title: "Sprite yang sudah dipilih tidak bisa diubah ukuran (Size) dan posisinya", isCorrect: false, explanation: "Salah! Ukuran, posisi, dan arah sprite bisa diatur kapan saja." }
+        ]
+      },
+      {
+        id: 4,
+        topic: "Memilih Latar (Backdrop)",
+        title: "Misi 4: Memilih Latar Belakang (Choose a Backdrop) 🌊",
+        icon: "🌊",
+        story: "Agar latar panggung sesuai dengan tema cerita bawah laut, kita perlu memilih backdrop yang tepat!",
+        cards: [
+          { id: 1, title: "Ikon 'Choose a Backdrop' (Pilih Latar) berada di samping ikon Choose a Sprite", isCorrect: true, explanation: "Benar! Ikon pemandangan di sudut kanan bawah digunakan untuk memilih latar." },
+          { id: 2, title: "Latar 'Underwater 1' dan 'Underwater 2' cocok untuk tema cerita bawah laut", isCorrect: true, explanation: "Benar! Kedua backdrop ini menampilkan pemandangan terumbu karang laut." },
+          { id: 3, title: "Latar panggung tidak bisa diganti jika sprite sudah dimasukkan", isCorrect: false, explanation: "Salah! Latar panggung bisa diganti kapan saja tanpa mengganggu sprite." },
+          { id: 4, title: "Kategori 'Di bawah laut' (Under water) menyaring latar khusus pemandangan air/laut", isCorrect: true, explanation: "Benar! Kategori ini memudahkan menemukan latar bertema laut." },
+          { id: 5, title: "Latar 'Underwater' akan mengubah sprite ikan buntal menjadi kucing secara otomatis", isCorrect: false, explanation: "Salah! Latar hanya mengubah pemandangan panggung." }
+        ]
+      },
+      {
+        id: 5,
+        topic: "Tampilan Akhir Proyek",
+        title: "Misi 5: Evaluasi Tampilan Proyek Bawah Laut 🪸",
+        icon: "🪸",
+        story: "Misi Terakhir! Mari periksa hasil akhir penataan lembar kerja proyek Scratch bertema laut kamu!",
+        cards: [
+          { id: 1, title: "Tampilan akhir proyek memuat dua sprite (Pufferfish & Jellyfish) di atas panggung", isCorrect: true, explanation: "Benar! Kedua tokoh tampil bersamaan di panggung." },
+          { id: 2, title: "Panggung menggunakan latar 'Underwater 1' dengan nuansa warna biru terumbu karang", isCorrect: true, explanation: "Benar! Latar memberikan suasana bawah laut yang hidup." },
+          { id: 3, title: "Daftar sprite di bawah panggung akan menampilkan ikon Pufferfish dan Jellyfish", isCorrect: true, explanation: "Benar! Panel Sprite menunjukkan semua objek aktif." },
+          { id: 4, title: "Sprite kucing masih harus tetap ada di panggung bersama Pufferfish", isCorrect: false, explanation: "Salah! Kucing sudah dihapus sebelumnya." },
+          { id: 5, title: "Proyek yang sudah dibuat dapat diberi nama judul dan disimpan di akun Scratch", isCorrect: true, explanation: "Benar! Kita bisa memberi nama proyek pada kolom judul." }
+        ]
+      }
+    ];
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    let missions = [];
+    let currentMissionIndex = 0;
+    let studentInfo = { name: "", class: "6 SD", id: "" };
+    let userAnswers = {}; 
+    let missionScores = [0, 0, 0, 0, 0];
+    let isChecked = false;
+
+    function startGame() {
+      const name = document.getElementById('student-name-input').value.trim();
+      const studentClass = document.getElementById('student-class-input').value.trim() || "6 SD";
+      const studentId = document.getElementById('student-id-input').value.trim() || "-";
+
+      if (!name) {
+        alert("Silakan isi namamu terlebih dahulu ya, Programmer Muda!");
+        return;
+      }
+
+      studentInfo = { name, class: studentClass, id: studentId };
+
+      missions = rawMissions.map(m => ({
+        ...m,
+        cards: shuffleArray(m.cards)
+      }));
+
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+
+      renderMission(0);
+    }
+
+    function renderMission(index) {
+      currentMissionIndex = index;
+      isChecked = false;
+      const m = missions[index];
+
+      document.getElementById('level-indicator').textContent = `${index + 1} / ${missions.length}`;
+      document.getElementById('mission-badge').textContent = `MISI ${index + 1} OF ${missions.length}`;
+      document.getElementById('mission-topic').textContent = `TOPIK: ${m.topic.toUpperCase()}`;
+      document.getElementById('mission-icon').textContent = m.icon;
+      document.getElementById('mission-title').textContent = m.title;
+      document.getElementById('mission-story').textContent = m.story;
+
+      const pct = ((index + 1) / missions.length) * 100;
+      document.getElementById('progress-bar').style.width = `${pct}%`;
+
+      document.getElementById('check-btn').classList.remove('hidden');
+      document.getElementById('next-btn').classList.add('hidden');
+
+      const cardsContainer = document.getElementById('cards-container');
+      cardsContainer.innerHTML = '';
+
+      m.cards.forEach((card, cardIdx) => {
+        const key = `${index}_${cardIdx}`;
+        const selectedVal = userAnswers[key];
+
+        const cardEl = document.createElement('div');
+        cardEl.className = 'item-card';
+        
+        cardEl.innerHTML = `
+          <div>
+            <div class="item-header">
+              <span class="item-num body-font">Pernyataan #${cardIdx + 1}</span>
+              <span id="status-tag-${cardIdx}" class="item-status body-font">
+                ${selectedVal === undefined ? 'Belum Dipilih' : (selectedVal ? '⭐ BENAR' : '❌ SALAH')}
+              </span>
+            </div>
+            <h3 class="item-title">${card.title}</h3>
+          </div>
+
+          <div id="feedback-${cardIdx}" class="fb-box hidden body-font"></div>
+
+          <div class="opt-grid body-font">
+            <button onclick="selectOption(${cardIdx}, true)" id="btn-true-${cardIdx}" 
+              class="btn-opt ${selectedVal === true ? 'btn-opt-true-active' : ''}">
+              <span>⭐</span> BENAR
+            </button>
+
+            <button onclick="selectOption(${cardIdx}, false)" id="btn-false-${cardIdx}" 
+              class="btn-opt ${selectedVal === false ? 'btn-opt-false-active' : ''}">
+              <span>❌</span> SALAH
+            </button>
+          </div>
+        `;
+
+        cardsContainer.appendChild(cardEl);
+      });
+    }
+
+    function selectOption(cardIdx, isTrue) {
+      if (isChecked) return; 
+
+      const key = `${currentMissionIndex}_${cardIdx}`;
+      userAnswers[key] = isTrue;
+
+      const btnTrue = document.getElementById(`btn-true-${cardIdx}`);
+      const btnFalse = document.getElementById(`btn-false-${cardIdx}`);
+      const statusTag = document.getElementById(`status-tag-${cardIdx}`);
+
+      if (isTrue) {
+        btnTrue.className = "btn-opt btn-opt-true-active";
+        btnFalse.className = "btn-opt";
+        statusTag.textContent = "⭐ BENAR";
+        statusTag.style.color = "#10b981";
+      } else {
+        btnFalse.className = "btn-opt btn-opt-false-active";
+        btnTrue.className = "btn-opt";
+        statusTag.textContent = "❌ SALAH";
+        statusTag.style.color = "#f43f5e";
+      }
+    }
+
+    function checkCurrentMission() {
+      const m = missions[currentMissionIndex];
+
+      for (let i = 0; i < m.cards.length; i++) {
+        const key = `${currentMissionIndex}_${i}`;
+        if (userAnswers[key] === undefined) {
+          alert(`Kamu belum memilih status untuk Pernyataan #${i + 1}. Silakan pilih BENAR atau SALAH terlebih dahulu!`);
+          return;
+        }
+      }
+
+      isChecked = true;
+      let correctCount = 0;
+
+      m.cards.forEach((card, cardIdx) => {
+        const key = `${currentMissionIndex}_${cardIdx}`;
+        const userChoice = userAnswers[key];
+        const isCorrect = userChoice === card.isCorrect;
+
+        if (isCorrect) correctCount++;
+
+        const fbEl = document.getElementById(`feedback-${cardIdx}`);
+        fbEl.classList.remove('hidden');
+
+        if (isCorrect) {
+          fbEl.className = "fb-box fb-correct body-font";
+          fbEl.innerHTML = `<strong>Analisis Tepat! 🎉</strong><br>${card.explanation}`;
+        } else {
+          fbEl.className = "fb-box fb-wrong body-font";
+          fbEl.innerHTML = `<strong>Kurang Tepat ❌</strong><br>Pernyataan ini seharusnya <strong>${card.isCorrect ? '⭐ BENAR' : '❌ SALAH'}</strong>.<br>${card.explanation}`;
+        }
+      });
+
+      const missionScore = (correctCount / m.cards.length) * 20;
+      missionScores[currentMissionIndex] = missionScore;
+
+      const totalScore = missionScores.reduce((a, b) => a + b, 0);
+      document.getElementById('total-score-display').textContent = Math.round(totalScore);
+
+      document.getElementById('check-btn').classList.add('hidden');
+      const nextBtn = document.getElementById('next-btn');
+      nextBtn.classList.remove('hidden');
+
+      if (currentMissionIndex === missions.length - 1) {
+        nextBtn.textContent = "🏆 Selesaikan & Sertifikat";
+      } else {
+        nextBtn.textContent = "Misi Berikutnya ➡️";
+      }
+
+      if (correctCount >= 4 && typeof confetti === 'function') {
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
+      }
+    }
+
+    function nextMission() {
+      if (currentMissionIndex < missions.length - 1) {
+        renderMission(currentMissionIndex + 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        showCertificate();
+      }
+    }
+
+    function showCertificate() {
+      const totalScore = Math.round(missionScores.reduce((a, b) => a + b, 0));
+      
+      document.getElementById('cert-student-name').textContent = studentInfo.name.toUpperCase();
+      document.getElementById('cert-student-class').textContent = studentInfo.class;
+      document.getElementById('cert-student-id').textContent = studentInfo.id;
+      document.getElementById('cert-score').textContent = totalScore;
+
+      let gradeText = "";
+      if (totalScore >= 90) gradeText = "Scratch Master ⭐⭐⭐";
+      else if (totalScore >= 75) gradeText = "Sangat Memuaskan 🎉";
+      else if (totalScore >= 60) gradeText = "Cukup Baik 👍";
+      else gradeText = "Perlu Berlatih Lagi 💪";
+
+      document.getElementById('cert-grade').textContent = gradeText;
+      document.getElementById('certificate-modal').classList.remove('hidden');
+
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+      }
+    }
+  </script>
+</body>
+</html>
